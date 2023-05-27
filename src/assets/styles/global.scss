@@ -1,0 +1,17 @@
+:root {
+    --primary: #4a7ce7;
+    --secondary: #fafafa;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--secondary);
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+}
