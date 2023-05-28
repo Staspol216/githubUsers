@@ -44,11 +44,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.input-wrapper {
-	margin-bottom: 30px;
-	position: relative;
-	padding: 12px;
-}
 .input {
 	border: 1px solid var(--primary);
 	outline: none;

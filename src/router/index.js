@@ -1,5 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router';
 import UserList from '@/views/UserList';
+import UserDetail from '@/views/UserDetail';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -9,6 +10,11 @@ const router = createRouter({
             name: 'UserList',
             component: UserList
         },
+        {
+            path: '/users/:login',
+            name: 'UserDetail',
+            component: UserDetail
+        }
     ]
 });
 

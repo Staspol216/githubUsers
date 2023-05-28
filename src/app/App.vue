@@ -8,7 +8,6 @@ export default {};
 </script>
 <style>
 @import "@/assets/styles/global.scss";
-@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
 
 .container {
     max-width: 680px;

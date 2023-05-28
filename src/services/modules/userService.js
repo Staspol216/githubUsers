@@ -3,17 +3,25 @@ import { OctokitInstance } from '../api/octokit';
 class UserService {
 
     constructor(apiInstance) {
-        this.api = apiInstance;
+        this.apiInstance = apiInstance;
     }
 
-    async getUsers(query) {
+    async getUsers(payload) {
         try {
-            const { data } = await this.api.request('GET /search/users', {
-                q: query
-            });
-            return [null, data];
+            const response = await this.apiInstance.request('GET /search/users', payload);
+            return [null, response];
         } catch (error) {
-            console.error(error);
+            return [error];
+        }
+    }
+
+    async getUserDetails(username) {
+        try {
+            const response = await this.apiInstance.request('GET /users/{username}', {
+                username,
+            });
+            return [null, response];
+        } catch(error) {
             return [error];
         }
     }
