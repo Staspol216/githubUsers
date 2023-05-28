@@ -37,5 +37,6 @@ export default {
 <style lang="scss" scoped>
 .avatar {
     border-radius: 50%;
+    border: 1px solid var(--primary);
 }
 </style>

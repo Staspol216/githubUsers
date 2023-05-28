@@ -1,27 +1,59 @@
 import { userService } from '@/services/modules/userService';
 
+const API_LIMIT = 100;
 
 export const users = {
     namespaced: true,
     state: () => ({
         users: null,
+        userDetails: null,
         error: '',
-        totalCount: null
+        errorDetails: '',
+        totalCount: null,
+        search: '',
+        order: 'desc',
+        page: 1,
+        limit: 10,
     }),
     getters: {
-        getUserById: (state) => (id) => {
-            return state.users.find((user) => user.id.toString() === id);
+        getRequestPayload({ search, page, order, limit }) {
+            return {
+                q: search,
+                page,
+                order,
+                per_page: limit,
+                sort: 'repositories',
+            };
+        },
+        getTotalPages({ totalCount, limit }) {
+            const total = Math.ceil(totalCount / limit);
+            return total > API_LIMIT ? API_LIMIT : total;
         }
     },
     mutations: {
-        SET_ERROR(state, error) {
+        setError(state, error) {
             state.error = error;
         },
-        SET_USERS(state, users) {
+        setErrorDetails(state, error) {
+            state.errorDetails = error;
+        },
+        setUsers(state, users) {
             state.users = users;
         },
-        SET_TOTAL_COUNT(state, count) {
+        setUserDetailsData(state, userDetails) {
+            state.userDetails = userDetails;
+        },
+        setTotalCount(state, count) {
             state.totalCount = count;
+        },
+        setListOrder(state, order) {
+            state.order = order;
+        },
+        setSearchQuery(state, query) {
+            state.search = query;
+        },
+        setPage(state, page) {
+            state.page = page;
         }
     },
     actions: {
@@ -30,14 +62,21 @@ export const users = {
             const [ error, { data: { items: users, total_count }} ] = await userService.getUsers(payload);
 
             if (error) {
-                commit('SET_ERROR', error);
+                commit('setError', error);
                 return;
             }
-            console.log(users);
-            console.log(total_count);
 
-            commit('SET_USERS', users);
-            commit('SET_TOTAL_COUNT', total_count);
+            commit('setUsers', users);
+            commit('setTotalCount', total_count);
         },
+        async loadUserDetails({ commit }, username) {
+            const [ error, { data } ] = await userService.getUserDetails(username);
+
+            if (error) {
+                commit('setErrorDetails', error);
+            }
+
+            commit('setUserDetailsData', data);
+        }
     },
 };

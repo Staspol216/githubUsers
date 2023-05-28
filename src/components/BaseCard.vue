@@ -58,7 +58,10 @@ export default {
 .card:hover {
   transform: scale(1.02);
 }
-
+.card-body {
+	display: flex;
+	align-items: center;
+}
 .avatar-wrapper {
     height: auto;
     display: flex;

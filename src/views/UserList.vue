@@ -53,14 +53,15 @@
     </div>
     <BasePagination 
       v-show="search.length > 2"
-      v-if="totalPages && users?.length"
-      v-model="page"
-      :pageCount="totalPages"
+      v-if="getTotalPages && users?.length"
+      :modelValue="page"
+      :pageCount="getTotalPages"
       :pageRange="3"
       :marginPages="2"
       :clickHandler="debouncedPaginate"
       containerClass="pagination"
       pageClass="pagination-item"
+      @update:modelValue="setPage"
     />
   </div>
 </template>
@@ -69,7 +70,7 @@
 import BaseInput from '@/components/BaseInput';
 import BaseCard from '@/components/BaseCard';
 import BaseAvatar from '@/components/BaseAvatar';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
 import { debounce } from 'lodash';
 import SortSelect from '@/components/SortSelect/SortSelect';
 import BasePagination from '@/components/BasePagination';
@@ -84,40 +85,30 @@ export default {
     },
     data() {
         return {
-            search: '',
-            page: 1,
-            per_page: 10,
-            order: 'desc',
             debouncedInput: null,
-            error: false,
+            debouncedPaginate: null,
         };
     },
     computed: {
         ...mapState('users', [
             'users',
-            'totalCount'
+            'totalCount',
+            'search',
+            'order',
+            'page',
+            'error'
         ]),
-        totalPages() {
-            const total = Math.ceil(this.totalCount / this.per_page);
-            const apiLimit = 100;
-            return total > apiLimit ? apiLimit : total;
-        }
+        ...mapGetters('users', [
+            'getRequestPayload',
+            'getTotalPages',
+        ]),
     },
     created() {
         this.debouncedInput = debounce((e) => {
-            const searchQuery = e.target.value;
-            this.error = false;
-            this.search = searchQuery;
-            if (searchQuery === '') return;
-            if (searchQuery.length <= 2) {
-                this.error = true;
-                return;
-            }
-            this.loadUsers(this.getRequestPayload());
+            this.handleSearch(e.target.value);
         }, 500);
-        this.debouncedPaginate = debounce((page) => {
-            this.page = page;
-            this.loadUsers(this.getRequestPayload());
+        this.debouncedPaginate= debounce(() => {
+            this.loadUsers(this.getRequestPayload);
         }, 500);
     },
     beforeUnmount() {
@@ -127,18 +118,24 @@ export default {
         ...mapActions('users',[
             'loadUsers',
         ]),
-        handleSortByRepo(order) {
-            this.order = order;
-            this.loadUsers(this.getRequestPayload());
+        ...mapMutations('users', [
+            'setSearchQuery',
+            'setListOrder', 
+            'setPage',
+            'setError'
+        ]),
+        handleSearch(query) {
+            this.setError(false);
+            this.setSearchQuery(query);
+            if (query.length <= 2) {
+                this.setError(true);
+                return;
+            }
+            this.loadUsers(this.getRequestPayload);
         },
-        getRequestPayload() {
-            return {
-                q: this.search,
-                per_page: this.per_page,
-                page: this.page,
-                order:  this.order,
-                sort: 'repositories',
-            };
+        handleSortByRepo(order) {
+            this.setListOrder(order);
+            this.loadUsers(this.getRequestPayload);
         },
     },
 };
