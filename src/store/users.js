@@ -8,23 +8,14 @@ export const users = {
         users: null,
         userDetails: null,
         error: '',
+        minLengthError: '',
         errorDetails: '',
         totalCount: null,
-        search: '',
         order: 'desc',
         page: 1,
         limit: 10,
     }),
     getters: {
-        getRequestPayload({ search, page, order, limit }) {
-            return {
-                q: search,
-                page,
-                order,
-                per_page: limit,
-                sort: 'repositories',
-            };
-        },
         getTotalPages({ totalCount, limit }) {
             const total = Math.ceil(totalCount / limit);
             return total > API_LIMIT ? API_LIMIT : total;

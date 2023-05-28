@@ -22,7 +22,7 @@ export default {
         },
         modelValue: {
             type: String,
-            required: true
+            default: ''
         }
     },
     emits: ['update:modelValue'],

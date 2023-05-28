@@ -5,11 +5,11 @@
         type="text"
         placeholder="Github username"
         :modelValue="search"
-        :error="error"
+        :error="minLengthError"
         @update:modelValue="debouncedInput"
       />
       <div
-        v-if="error"
+        v-if="minLengthError"
         class="error"
       >
         Please, enter more than 2 characters
@@ -85,6 +85,8 @@ export default {
     },
     data() {
         return {
+            search: '',
+            minLengthError: false,
             debouncedInput: null,
             debouncedPaginate: null,
         };
@@ -93,13 +95,11 @@ export default {
         ...mapState('users', [
             'users',
             'totalCount',
-            'search',
             'order',
             'page',
             'error'
         ]),
         ...mapGetters('users', [
-            'getRequestPayload',
             'getTotalPages',
         ]),
     },
@@ -108,7 +108,7 @@ export default {
             this.handleSearch(e.target.value);
         }, 500);
         this.debouncedPaginate= debounce(() => {
-            this.loadUsers(this.getRequestPayload);
+            this.loadUsers(this.getRequestPayload());
         }, 500);
     },
     beforeUnmount() {
@@ -119,23 +119,31 @@ export default {
             'loadUsers',
         ]),
         ...mapMutations('users', [
-            'setSearchQuery',
             'setListOrder', 
             'setPage',
             'setError'
         ]),
         handleSearch(query) {
-            this.setError(false);
-            this.setSearchQuery(query);
+            this.minLengthError = false;
+            this.search = query;
             if (query.length <= 2) {
-                this.setError(true);
+                this.minLengthError = true;
                 return;
             }
-            this.loadUsers(this.getRequestPayload);
+            this.loadUsers(this.getRequestPayload());
         },
         handleSortByRepo(order) {
             this.setListOrder(order);
-            this.loadUsers(this.getRequestPayload);
+            this.loadUsers(this.getRequestPayload());
+        },
+        getRequestPayload() {
+            return {
+                q: this.search,
+                page: this.page,
+                order: this.order,
+                per_page: this.limit,
+                sort: 'repositories',
+            };
         },
     },
 };

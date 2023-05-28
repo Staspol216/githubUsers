@@ -13,11 +13,14 @@ module.exports = (env) => {
     const PORT = env.port || 3000;
     const isDev = mode === 'development';
 
+    const apiUrl = env.API_KEY || 'http://localhost:8000';
+
     const config = buildWebpackConfig({
         mode,
         paths,
         isDev,
         port: PORT,
+        apiUrl
     });
 
     return config;

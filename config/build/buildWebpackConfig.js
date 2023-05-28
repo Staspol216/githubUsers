@@ -3,9 +3,10 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
 const buildLoaders = require('./buildLoaders');
+const Dotenv = require('dotenv-webpack');
 
 function buildWebpackConfig(options) {
-    const { paths, mode, isDev } = options;
+    const { paths, mode, isDev, apiUrl } = options;
 
     const devServer = {
         static: './build',
@@ -14,6 +15,7 @@ function buildWebpackConfig(options) {
     };
 
     const plugins = [
+        new Dotenv(),
         new HtmlWebpackPlugin({
             template: paths.html,
         }),
