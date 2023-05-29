@@ -97,7 +97,8 @@ export default {
             'totalCount',
             'order',
             'page',
-            'error'
+            'error',
+            'limit'
         ]),
         ...mapGetters('users', [
             'getTotalPages',
